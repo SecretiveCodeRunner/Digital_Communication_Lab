@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sampling, Aliasing & Sinc Reconstruction Studio — Exp 3</title>
+  <style>
+    :root {
+      --bg: #0b0f19;
+      --card-bg: #111827;
+      --card-border: #1f2937;
+      --primary: #38bdf8;
+      --primary-glow: rgba(56, 189, 248, 0.2);
+      --secondary: #818cf8;
+      --accent: #f59e0b;
+      --success: #10b981;
+      --danger: #ef4444;
+      --text: #f3f4f6;
+      --text-muted: #9ca3af;
+      --font-mono: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: var(--font-sans);
+      line-height: 1.5;
+      padding: 20px;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 1300px;
+      margin: 0 auto;
+    }
+
+    /* Header */
+    header {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 20px 24px;
+      margin-bottom: 20px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .header-title h1 {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .badge-lab {
+      background: rgba(56, 189, 248, 0.15);
+      color: var(--primary);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      font-size: 0.75rem;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-family: var(--font-mono);
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .header-meta {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    .header-controls {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      background: #1e293b;
+      color: #fff;
+      border: 1px solid var(--card-border);
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+
+    .btn:hover {
+      background: #334155;
+      border-color: #475569;
+    }
+
+    .btn-preset {
+      border-color: rgba(56, 189, 248, 0.3);
+    }
+    .btn-preset.active {
+      background: var(--primary);
+      color: #0f172a;
+      border-color: var(--primary);
+      box-shadow: 0 0 12px var(--primary-glow);
+    }
+
+    /* Grid Layout */
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: 360px 1fr;
+      gap: 20px;
+    }
+
+    @media (max-width: 980px) {
+      .dashboard-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Cards */
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+
+    .card-title {
+      font-size: 1rem;
+      font-weight: 600;
+      color: #fff;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    /* Control Groups */
+    .control-group {
+      margin-bottom: 18px;
+    }
+
+    .control-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    .control-val {
+      font-family: var(--font-mono);
+      color: var(--primary);
+      font-weight: 600;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      height: 6px;
+      background: #1e293b;
+      border-radius: 3px;
+      outline: none;
+      -webkit-appearance: none;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--primary);
+      cursor: pointer;
+      box-shadow: 0 0 8px var(--primary);
+    }
+
+    /* Live Math Metric Cards */
+    .metric-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 15px;
+    }
+
+    .metric-box {
+      background: #0f172a;
+      border: 1px solid #1e293b;
+      border-radius: 8px;
+      padding: 12px;
+    }
+
+    .metric-label {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .metric-value {
+      font-size: 1.15rem;
+      font-weight: 700;
+      font-family: var(--font-mono);
+      margin-top: 4px;
+      color: #fff;
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      font-family: var(--font-mono);
+    }
+    .status-oversampled {
+      background: rgba(16, 185, 129, 0.2);
+      color: #10b981;
+      border: 1px solid #10b981;
+    }
+    .status-critical {
+      background: rgba(245, 158, 11, 0.2);
+      color: #f59e0b;
+      border: 1px solid #f59e0b;
+    }
+    .status-aliased {
+      background: rgba(239, 68, 68, 0.2);
+      color: #ef4444;
+      border: 1px solid #ef4444;
+    }
+
+    /* Formula Banner */
+    .formula-banner {
+      background: #0c1322;
+      border-left: 4px solid var(--primary);
+      padding: 12px 14px;
+      border-radius: 0 8px 8px 0;
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      margin-top: 15px;
+      color: #cbd5e1;
+    }
+
+    /* Canvas Plot Containers */
+    .plot-container {
+      position: relative;
+      background: #090d16;
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      padding: 12px;
+      margin-bottom: 20px;
+    }
+
+    .plot-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .plot-title {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #e2e8f0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .plot-legend {
+      display: flex;
+      gap: 14px;
+      font-size: 0.75rem;
+      font-family: var(--font-mono);
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .legend-color {
+      width: 10px;
+      height: 10px;
+      border-radius: 2px;
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      height: 220px;
+      border-radius: 6px;
+    }
+
+    .spectrum-canvas {
+      height: 170px;
+    }
+
+    /* Audio button */
+    .audio-btn-group {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <!-- Header -->
+  <header>
+    <div class="header-title">
+      <h1>
+        <span>Sampling, Aliasing & Sinc Reconstruction Studio</span>
+        <span class="badge-lab">Exp 3 Interactive</span>
+      </h1>
+      <div class="header-meta">
+        Digital Communication Laboratory • Cooch Behar Government Engineering College • Apurba Maity (Roll: 34900324001)
+      </div>
+    </div>
+
+    <div class="header-controls">
+      <button class="btn btn-preset active" id="btn-preset-over" onclick="applyPreset('oversampled')">
+        🚀 1800 Hz (Oversampled)
+      </button>
+      <button class="btn btn-preset" id="btn-preset-crit" onclick="applyPreset('critical')">
+        ⚖️ 600 Hz (Nyquist)
+      </button>
+      <button class="btn btn-preset" id="btn-preset-under" onclick="applyPreset('undersampled')">
+        ⚠️ 400 Hz (Aliased)
+      </button>
+    </div>
+  </header>
+
+  <div class="dashboard-grid">
+    <!-- Left Sidebar: Controls & Live Calculations -->
+    <div class="sidebar">
+      <div class="card">
+        <div class="card-title">
+          <span>Signal & Sampling Controls</span>
+        </div>
+
+        <div class="control-group">
+          <div class="control-label">
+            <span>Sampling Frequency (<var>f<sub>s</sub></var>)</span>
+            <span class="control-val" id="val-fs">1800 Hz</span>
+          </div>
+          <input type="range" id="slider-fs" min="150" max="2400" step="10" value="1800" oninput="updateParams()">
+        </div>
+
+        <div class="control-group">
+          <div class="control-label">
+            <span>Tone 1 Frequency (<var>f<sub>1</sub></var>)</span>
+            <span class="control-val" id="val-f1">100 Hz</span>
+          </div>
+          <input type="range" id="slider-f1" min="20" max="250" step="5" value="100" oninput="updateParams()">
+        </div>
+
+        <div class="control-group">
+          <div class="control-label">
+            <span>Tone 2 Frequency (<var>f<sub>2</sub></var>)</span>
+            <span class="control-val" id="val-f2">300 Hz</span>
+          </div>
+          <input type="range" id="slider-f2" min="50" max="600" step="10" value="300" oninput="updateParams()">
+        </div>
+
+        <div class="control-group">
+          <div class="control-label">
+            <span>Tone 2 Amplitude (<var>A<sub>2</sub></var>)</span>
+            <span class="control-val" id="val-a2">0.50</span>
+          </div>
+          <input type="range" id="slider-a2" min="0.1" max="1.0" step="0.05" value="0.5" oninput="updateParams()">
+        </div>
+
+        <div class="control-group">
+          <div class="control-label">
+            <span>Display Time Window</span>
+            <span class="control-val" id="val-window">25 ms</span>
+          </div>
+          <input type="range" id="slider-window" min="10" max="50" step="1" value="25" oninput="updateParams()">
+        </div>
+
+        <div class="audio-btn-group">
+          <button class="btn" style="flex:1" onclick="playAudio('orig')">🔊 Listen Original</button>
+          <button class="btn" style="flex:1" onclick="playAudio('recon')">🔊 Listen Reconstructed</button>
+        </div>
+      </div>
+
+      <!-- Real-Time Mathematical Callouts -->
+      <div class="card">
+        <div class="card-title">
+          <span>Live Theoretical Diagnostics</span>
+          <span id="badge-regime" class="status-badge status-oversampled">Oversampled</span>
+        </div>
+
+        <div class="metric-grid">
+          <div class="metric-box">
+            <div class="metric-label">Max Frequency (f_max)</div>
+            <div class="metric-value" id="disp-fmax">300 Hz</div>
+          </div>
+          <div class="metric-box">
+            <div class="metric-label">Nyquist Rate (2×f_max)</div>
+            <div class="metric-value" id="disp-fnyq">600 Hz</div>
+          </div>
+          <div class="metric-box">
+            <div class="metric-label">Nyquist Zone (fs / 2)</div>
+            <div class="metric-value" id="disp-fnzone">900 Hz</div>
+          </div>
+          <div class="metric-box">
+            <div class="metric-label">Reconstruction Error</div>
+            <div class="metric-value" id="disp-mse">0.000000</div>
+          </div>
+        </div>
+
+        <div class="formula-banner" id="disp-math-explanation">
+          x(t) = sin(2π·100t) + 0.5·sin(2π·300t)<br>
+          Whittaker-Shannon Sinc interpolation preserves 100% signal energy without aliasing distortion.
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Main Area: Interactive Waveform and Spectrum Plots -->
+    <div class="main-plots">
+      <!-- Time Domain Waveform -->
+      <div class="plot-container">
+        <div class="plot-header">
+          <div class="plot-title">
+            <span>📈 Time-Domain Waveforms & Whittaker-Shannon Sinc Reconstruction</span>
+          </div>
+          <div class="plot-legend">
+            <div class="legend-item"><div class="legend-color" style="background:#38bdf8"></div> Original x(t)</div>
+            <div class="legend-item"><div class="legend-color" style="background:#fbbf24"></div> Sample Stems x[n]</div>
+            <div class="legend-item"><div class="legend-color" style="background:#34d399"></div> Reconstructed x̂(t)</div>
+          </div>
+        </div>
+        <canvas id="timeCanvas" width="800" height="230"></canvas>
+      </div>
+
+      <!-- Frequency Domain Spectrum -->
+      <div class="plot-container">
+        <div class="plot-header">
+          <div class="plot-title">
+            <span>📊 Frequency Domain Magnitude Spectrum & Spectral Aliasing Folding</span>
+          </div>
+          <div class="plot-legend">
+            <div class="legend-item"><div class="legend-color" style="background:#38bdf8"></div> True Tones</div>
+            <div class="legend-item"><div class="legend-color" style="background:#ef4444"></div> Aliased Image Peak</div>
+            <div class="legend-item"><div class="legend-color" style="background:#94a3b8"></div> Nyquist Boundary (fs/2)</div>
+          </div>
+        </div>
+        <canvas id="freqCanvas" class="spectrum-canvas" width="800" height="170"></canvas>
+      </div>
+
+      <!-- Error Residual Plot -->
+      <div class="plot-container">
+        <div class="plot-header">
+          <div class="plot-title">
+            <span>📉 Instantaneous Reconstruction Residual Error: e(t) = x(t) - x̂(t)</span>
+          </div>
+          <div class="plot-legend">
+            <div class="legend-item"><div class="legend-color" style="background:#f87171"></div> Residual Error e(t)</div>
+          </div>
+        </div>
+        <canvas id="errorCanvas" style="height:120px;" width="800" height="120"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // State
+  let params = {
+    fs: 1800,
+    f1: 100,
+    f2: 300,
+    a2: 0.5,
+    tWindowMs: 25
+  };
+
+  const timeCanvas = document.getElementById('timeCanvas');
+  const freqCanvas = document.getElementById('freqCanvas');
+  const errorCanvas = document.getElementById('errorCanvas');
+
+  function sinc(x) {
+    if (Math.abs(x) < 1e-9) return 1.0;
+    const px = Math.PI * x;
+    return Math.sin(px) / px;
+  }
+
+  function continuousSignal(t) {
+    return Math.sin(2.0 * Math.PI * params.f1 * t) + params.a2 * Math.sin(2.0 * Math.PI * params.f2 * t);
+  }
+
+  function updateParams() {
+    params.fs = parseFloat(document.getElementById('slider-fs').value);
+    params.f1 = parseFloat(document.getElementById('slider-f1').value);
+    params.f2 = parseFloat(document.getElementById('slider-f2').value);
+    params.a2 = parseFloat(document.getElementById('slider-a2').value);
+    params.tWindowMs = parseFloat(document.getElementById('slider-window').value);
+
+    document.getElementById('val-fs').innerText = params.fs + ' Hz';
+    document.getElementById('val-f1').innerText = params.f1 + ' Hz';
+    document.getElementById('val-f2').innerText = params.f2 + ' Hz';
+    document.getElementById('val-a2').innerText = params.a2.toFixed(2);
+    document.getElementById('val-window').innerText = params.tWindowMs + ' ms';
+
+    // Clear preset button active highlight
+    ['btn-preset-over', 'btn-preset-crit', 'btn-preset-under'].forEach(id => {
+      document.getElementById(id).classList.remove('active');
+    });
+
+    if (params.fs === 1800 && params.f1 === 100 && params.f2 === 300) {
+      document.getElementById('btn-preset-over').classList.add('active');
+    } else if (params.fs === 600 && params.f1 === 100 && params.f2 === 300) {
+      document.getElementById('btn-preset-crit').classList.add('active');
+    } else if (params.fs === 400 && params.f1 === 100 && params.f2 === 300) {
+      document.getElementById('btn-preset-under').classList.add('active');
+    }
+
+    renderAll();
+  }
+
+  function applyPreset(type) {
+    if (type === 'oversampled') {
+      document.getElementById('slider-fs').value = 1800;
+      document.getElementById('slider-f1').value = 100;
+      document.getElementById('slider-f2').value = 300;
+      document.getElementById('slider-a2').value = 0.5;
+    } else if (type === 'critical') {
+      document.getElementById('slider-fs').value = 600;
+      document.getElementById('slider-f1').value = 100;
+      document.getElementById('slider-f2').value = 300;
+      document.getElementById('slider-a2').value = 0.5;
+    } else if (type === 'undersampled') {
+      document.getElementById('slider-fs').value = 400;
+      document.getElementById('slider-f1').value = 100;
+      document.getElementById('slider-f2').value = 300;
+      document.getElementById('slider-a2').value = 0.5;
+    }
+    updateParams();
+  }
+
+  function renderAll() {
+    const fmax = Math.max(params.f1, params.f2);
+    const fnyq = 2.0 * fmax;
+    const fnzone = params.fs / 2.0;
+
+    document.getElementById('disp-fmax').innerText = fmax.toFixed(0) + ' Hz';
+    document.getElementById('disp-fnyq').innerText = fnyq.toFixed(0) + ' Hz';
+    document.getElementById('disp-fnzone').innerText = fnzone.toFixed(0) + ' Hz';
+
+    const badge = document.getElementById('badge-regime');
+    const mathBox = document.getElementById('disp-math-explanation');
+
+    let aliasedF2 = null;
+    if (params.fs < 2.0 * params.f2) {
+      aliasedF2 = Math.abs(params.f2 - Math.round(params.f2 / params.fs) * params.fs);
+    }
+
+    if (params.fs > fnyq + 10) {
+      badge.innerText = 'Oversampled (No Aliasing)';
+      badge.className = 'status-badge status-oversampled';
+      mathBox.innerHTML = `Condition Satisfied: <b>f<sub>s</sub> (${params.fs} Hz) > 2·f<sub>max</sub> (${fnyq} Hz)</b>.<br>` +
+        `Whittaker-Shannon interpolation recovers continuous wave perfectly (Error ≈ 0).`;
+    } else if (Math.abs(params.fs - fnyq) <= 10) {
+      badge.innerText = 'Critical Nyquist Rate';
+      badge.className = 'status-badge status-critical';
+      mathBox.innerHTML = `Boundary Condition: <b>f<sub>s</sub> (${params.fs} Hz) = 2·f<sub>max</sub> (${fnyq} Hz)</b>.<br>` +
+        `Exactly 2 samples per highest cycle. Critical reconstruction limit.`;
+    } else {
+      badge.innerText = '⚠️ Undersampled (Aliasing)';
+      badge.className = 'status-badge status-aliased';
+      mathBox.innerHTML = `Violation: <b>f<sub>s</sub> (${params.fs} Hz) < 2·f<sub>max</sub> (${fnyq} Hz)</b>.<br>` +
+        `<b>Aliasing Occurs!</b> The ${params.f2} Hz tone folds back onto <b>|${params.f2} - ${params.fs}| = ${aliasedF2} Hz</b>.`;
+    }
+
+    // Time window vectors
+    const tMax = params.tWindowMs / 1000.0;
+    const N_fine = 600;
+    const t_fine = [];
+    const x_orig = [];
+    for (let i = 0; i < N_fine; i++) {
+      const t = (i / (N_fine - 1)) * tMax;
+      t_fine.push(t);
+      x_orig.push(continuousSignal(t));
+    }
+
+    // Discrete samples (we take a slightly wider range for sinc edge stability)
+    const Ts = 1.0 / params.fs;
+    const n_min = Math.floor(-0.01 / Ts);
+    const n_max = Math.ceil((tMax + 0.01) / Ts);
+    const sample_times = [];
+    const sample_values = [];
+
+    for (let n = n_min; n <= n_max; n++) {
+      const t_s = n * Ts;
+      sample_times.push(t_s);
+      sample_values.push(continuousSignal(t_s));
+    }
+
+    // Sinc reconstruction
+    const x_recon = [];
+    const err_vec = [];
+    let mseSum = 0;
+
+    for (let i = 0; i < N_fine; i++) {
+      const t = t_fine[i];
+      let val = 0;
+      for (let k = 0; k < sample_times.length; k++) {
+        val += sample_values[k] * sinc(params.fs * (t - sample_times[k]));
+      }
+      x_recon.push(val);
+      const diff = x_orig[i] - val;
+      err_vec.push(diff);
+      mseSum += diff * diff;
+    }
+
+    const mse = mseSum / N_fine;
+    document.getElementById('disp-mse').innerText = mse.toFixed(6);
+
+    // Draw Canvases
+    drawTimeDomain(t_fine, x_orig, x_recon, sample_times, sample_values, tMax);
+    drawFrequencyDomain(fmax, fnzone, aliasedF2);
+    drawErrorDomain(t_fine, err_vec, tMax);
+  }
+
+  function drawTimeDomain(t_fine, x_orig, x_recon, s_times, s_vals, tMax) {
+    const ctx = timeCanvas.getContext('2d');
+    const W = timeCanvas.width;
+    const H = timeCanvas.height;
+    ctx.clearRect(0, 0, W, H);
+
+    const padL = 45, padR = 20, padT = 20, padB = 30;
+    const plotW = W - padL - padR;
+    const plotH = H - padT - padB;
+
+    const yMin = -1.8, yMax = 1.8;
+
+    function mapX(t) { return padL + (t / tMax) * plotW; }
+    function mapY(y) { return padT + (1 - (y - yMin) / (yMax - yMin)) * plotH; }
+
+    // Grid
+    ctx.strokeStyle = '#1e293b';
+    ctx.lineWidth = 1;
+    ctx.setLineDash([4, 4]);
+
+    for (let y = -1.5; y <= 1.5; y += 0.75) {
+      ctx.beginPath();
+      ctx.moveTo(padL, mapY(y));
+      ctx.lineTo(W - padR, mapY(y));
+      ctx.stroke();
+      ctx.fillStyle = '#64748b';
+      ctx.font = '10px monospace';
+      ctx.fillText(y.toFixed(1), 12, mapY(y) + 3);
+    }
+
+    for (let t = 0; t <= tMax; t += tMax / 5) {
+      ctx.beginPath();
+      ctx.moveTo(mapX(t), padT);
+      ctx.lineTo(mapX(t), H - padB);
+      ctx.stroke();
+      ctx.fillStyle = '#64748b';
+      ctx.font = '10px monospace';
+      ctx.fillText((t * 1000).toFixed(1) + 'ms', mapX(t) - 12, H - 10);
+    }
+    ctx.setLineDash([]);
+
+    // Zero axis
+    ctx.strokeStyle = '#334155';
+    ctx.beginPath();
+    ctx.moveTo(padL, mapY(0));
+    ctx.lineTo(W - padR, mapY(0));
+    ctx.stroke();
+
+    // 1. Original Continuous Signal (dashed cyan)
+    ctx.strokeStyle = '#38bdf8';
+    ctx.lineWidth = 2;
+    ctx.setLineDash([5, 4]);
+    ctx.beginPath();
+    for (let i = 0; i < t_fine.length; i++) {
+      const px = mapX(t_fine[i]);
+      const py = mapY(x_orig[i]);
+      if (i === 0) ctx.moveTo(px, py);
+      else ctx.lineTo(px, py);
+    }
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // 2. Reconstructed Whittaker-Shannon Waveform (solid green)
+    ctx.strokeStyle = '#34d399';
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    for (let i = 0; i < t_fine.length; i++) {
+      const px = mapX(t_fine[i]);
+      const py = mapY(x_recon[i]);
+      if (i === 0) ctx.moveTo(px, py);
+      else ctx.lineTo(px, py);
+    }
+    ctx.stroke();
+
+    // 3. Discrete Sample Stems & Dots (amber)
+    ctx.strokeStyle = '#fbbf24';
+    ctx.fillStyle = '#fbbf24';
+    ctx.lineWidth = 1.5;
+
+    for (let k = 0; k < s_times.length; k++) {
+      const t = s_times[k];
+      if (t >= 0 && t <= tMax) {
+        const px = mapX(t);
+        const py = mapY(s_vals[k]);
+        const pZero = mapY(0);
+
+        ctx.beginPath();
+        ctx.moveTo(px, pZero);
+        ctx.lineTo(px, py);
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.arc(px, py, 3.5, 0, 2 * Math.PI);
+        ctx.fill();
+      }
+    }
+  }
+
+  function drawFrequencyDomain(fmax, fnzone, aliasedF2) {
+    const ctx = freqCanvas.getContext('2d');
+    const W = freqCanvas.width;
+    const H = freqCanvas.height;
+    ctx.clearRect(0, 0, W, H);
+
+    const padL = 45, padR = 20, padT = 20, padB = 30;
+    const plotW = W - padL - padR;
+    const plotH = H - padT - padB;
+    const fLimit = 1200;
+
+    function mapF(f) { return padL + (f / fLimit) * plotW; }
+    function mapMag(m) { return padT + (1 - m / 1.3) * plotH; }
+
+    // Grid
+    ctx.strokeStyle = '#1e293b';
+    ctx.lineWidth = 1;
+    ctx.setLineDash([4, 4]);
+    for (let f = 0; f <= fLimit; f += 200) {
+      ctx.beginPath();
+      ctx.moveTo(mapF(f), padT);
+      ctx.lineTo(mapF(f), H - padB);
+      ctx.stroke();
+      ctx.fillStyle = '#64748b';
+      ctx.font = '10px monospace';
+      ctx.fillText(f + 'Hz', mapF(f) - 12, H - 10);
+    }
+    ctx.setLineDash([]);
+
+    // Zero axis
+    ctx.strokeStyle = '#334155';
+    ctx.beginPath();
+    ctx.moveTo(padL, mapMag(0));
+    ctx.lineTo(W - padR, mapMag(0));
+    ctx.stroke();
+
+    // Nyquist Folding Line fs/2
+    if (fnzone <= fLimit) {
+      const pFnyq = mapF(fnzone);
+      ctx.strokeStyle = '#f59e0b';
+      ctx.lineWidth = 1.8;
+      ctx.setLineDash([4, 4]);
+      ctx.beginPath();
+      ctx.moveTo(pFnyq, padT);
+      ctx.lineTo(pFnyq, H - padB);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      ctx.fillStyle = '#f59e0b';
+      ctx.font = 'bold 10px monospace';
+      ctx.fillText(`fs/2 (${fnzone.toFixed(0)}Hz)`, pFnyq - 35, padT + 12);
+    }
+
+    // Tone 1: 100 Hz (Mag 1.0)
+    drawStem(ctx, mapF(params.f1), mapMag(0), mapMag(1.0), '#38bdf8', `f1: ${params.f1}Hz (1.0)`);
+
+    // Tone 2: 300 Hz (Mag a2)
+    drawStem(ctx, mapF(params.f2), mapMag(0), mapMag(params.a2), '#38bdf8', `f2: ${params.f2}Hz (${params.a2.toFixed(2)})`);
+
+    // Aliased Tone (if any)
+    if (aliasedF2 !== null && Math.abs(aliasedF2 - params.f2) > 1) {
+      drawStem(ctx, mapF(aliasedF2), mapMag(0), mapMag(params.a2), '#ef4444', `Alias: ${aliasedF2}Hz`);
+    }
+  }
+
+  function drawStem(ctx, px, py0, py1, color, label) {
+    ctx.strokeStyle = color;
+    ctx.fillStyle = color;
+    ctx.lineWidth = 2.5;
+
+    ctx.beginPath();
+    ctx.moveTo(px, py0);
+    ctx.lineTo(px, py1);
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.arc(px, py1, 4.5, 0, 2 * Math.PI);
+    ctx.fill();
+
+    ctx.font = 'bold 11px monospace';
+    ctx.fillText(label, px - 25, py1 - 8);
+  }
+
+  function drawErrorDomain(t_fine, err_vec, tMax) {
+    const ctx = errorCanvas.getContext('2d');
+    const W = errorCanvas.width;
+    const H = errorCanvas.height;
+    ctx.clearRect(0, 0, W, H);
+
+    const padL = 45, padR = 20, padT = 15, padB = 20;
+    const plotW = W - padL - padR;
+    const plotH = H - padT - padB;
+
+    const eMax = 1.5;
+    function mapX(t) { return padL + (t / tMax) * plotW; }
+    function mapY(e) { return padT + (1 - (e - (-eMax)) / (2 * eMax)) * plotH; }
+
+    // Grid & Zero
+    ctx.strokeStyle = '#334155';
+    ctx.beginPath();
+    ctx.moveTo(padL, mapY(0));
+    ctx.lineTo(W - padR, mapY(0));
+    ctx.stroke();
+
+    ctx.strokeStyle = '#ef4444';
+    ctx.lineWidth = 1.8;
+    ctx.beginPath();
+    for (let i = 0; i < t_fine.length; i++) {
+      const px = mapX(t_fine[i]);
+      const py = mapY(err_vec[i]);
+      if (i === 0) ctx.moveTo(px, py);
+      else ctx.lineTo(px, py);
+    }
+    ctx.stroke();
+  }
+
+  // Web Audio Demo Synthesizer
+  let audioCtx = null;
+  function playAudio(mode) {
+    if (!audioCtx) {
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+
+    const osc1 = audioCtx.createOscillator();
+    const osc2 = audioCtx.createOscillator();
+    const gain1 = audioCtx.createGain();
+    const gain2 = audioCtx.createGain();
+
+    osc1.frequency.value = params.f1;
+    gain1.gain.value = 0.2;
+
+    if (mode === 'orig') {
+      osc2.frequency.value = params.f2;
+      gain2.gain.value = 0.2 * params.a2;
+    } else {
+      // Reconstructed mode: if aliased, tone 2 sounds at alias freq
+      let f2_sound = params.f2;
+      if (params.fs < 2.0 * params.f2) {
+        f2_sound = Math.abs(params.f2 - Math.round(params.f2 / params.fs) * params.fs);
+      }
+      osc2.frequency.value = f2_sound;
+      gain2.gain.value = 0.2 * params.a2;
+    }
+
+    osc1.connect(gain1);
+    osc2.connect(gain2);
+    gain1.connect(audioCtx.destination);
+    gain2.connect(audioCtx.destination);
+
+    const now = audioCtx.currentTime;
+    osc1.start(now);
+    osc2.start(now);
+    osc1.stop(now + 1.2);
+    osc2.stop(now + 1.2);
+  }
+
+  // Initial load
+  window.addEventListener('load', () => {
+    updateParams();
+  });
+</script>
+
+</body>
+</html>
