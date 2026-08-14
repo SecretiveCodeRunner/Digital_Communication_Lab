@@ -1,0 +1,19 @@
+# Personal Presentation Scripts & Private Notes
+*PRESENTATION_SCRIPT*
+*Presentation_Script*
+*presentation_script*
+build_presentation_script_pdf.py
+test.pdf
+
+# TeX & Build Artifacts
+*.aux
+*.log
+*.out
+*.toc
+*.synctex.gz
+missfont.log
+
+# Python Cache & Checkpoints
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
