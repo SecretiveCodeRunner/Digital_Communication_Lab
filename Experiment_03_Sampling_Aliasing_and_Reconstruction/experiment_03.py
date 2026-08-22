@@ -160,6 +160,7 @@ def run_experiment_3():
     # PLOT 1: Reference vs Sampled Discrete Stems
     # -------------------------------------------------------------------------
     fig, axes = plt.subplots(3, 1, figsize=(12, 9), sharex=True)
+    fig.suptitle('Figure 1: Reference Continuous Signal vs. Sampled Discrete Stems', fontsize=14, fontweight='bold', y=0.99)
     for i, case in enumerate(sampling_cases):
         name = case["name"]
         t_samp, x_samp = sampled_data[name]
@@ -179,7 +180,7 @@ def run_experiment_3():
         axes[i].legend(loc='upper right')
         
     axes[-1].set_xlabel('Time (ms)')
-    plt.tight_layout()
+    plt.tight_layout(rect=[0, 0, 1, 0.97])
     fig1_path = os.path.join(OUTPUT_DIR, 'exp3_sampled_signals.png')
     plt.savefig(fig1_path, dpi=300)
     plt.close()
@@ -189,6 +190,7 @@ def run_experiment_3():
     # PLOT 2: Continuous Reference vs Sinc Reconstructed Signals
     # -------------------------------------------------------------------------
     fig, axes = plt.subplots(3, 1, figsize=(12, 9), sharex=True)
+    fig.suptitle('Figure 2: Original Reference vs. Sinc Reconstructed Waveforms', fontsize=14, fontweight='bold', y=0.99)
     for i, case in enumerate(sampling_cases):
         name = case["name"]
         x_rec, _ = reconstructions[name]
@@ -202,7 +204,7 @@ def run_experiment_3():
         axes[i].legend(loc='upper right')
         
     axes[-1].set_xlabel('Time (ms)')
-    plt.tight_layout()
+    plt.tight_layout(rect=[0, 0, 1, 0.97])
     fig2_path = os.path.join(OUTPUT_DIR, 'exp3_reconstructed_waveforms.png')
     plt.savefig(fig2_path, dpi=300)
     plt.close()
@@ -212,6 +214,7 @@ def run_experiment_3():
     # PLOT 3: Magnitude Spectra (Original vs Reconstructed FFTs)
     # -------------------------------------------------------------------------
     fig, axes = plt.subplots(4, 1, figsize=(12, 10), sharex=True)
+    fig.suptitle('Figure 3: Single-Sided Magnitude Spectra (Original vs. Reconstructed FFTs)', fontsize=14, fontweight='bold', y=0.99)
     
     # Original spectrum
     freqs_ref, mag_ref = calculate_spectrum(x_continuous, fs_fine)
@@ -241,7 +244,7 @@ def run_experiment_3():
         axes[i+1].legend(loc='upper right')
         
     axes[-1].set_xlabel('Frequency (Hz)')
-    plt.tight_layout()
+    plt.tight_layout(rect=[0, 0, 1, 0.97])
     fig3_path = os.path.join(OUTPUT_DIR, 'exp3_magnitude_spectra.png')
     plt.savefig(fig3_path, dpi=300)
     plt.close()
@@ -251,6 +254,7 @@ def run_experiment_3():
     # PLOT 4: Time-Domain Reconstruction Error Waveforms
     # -------------------------------------------------------------------------
     fig, axes = plt.subplots(3, 1, figsize=(12, 8), sharex=True)
+    fig.suptitle('Figure 4: Time-Domain Reconstruction Error Waveforms', fontsize=14, fontweight='bold', y=0.99)
     for i, case in enumerate(sampling_cases):
         name = case["name"]
         _, error = reconstructions[name]
@@ -264,7 +268,7 @@ def run_experiment_3():
         axes[i].legend(loc='upper right')
         
     axes[-1].set_xlabel('Time (ms)')
-    plt.tight_layout()
+    plt.tight_layout(rect=[0, 0, 1, 0.97])
     fig4_path = os.path.join(OUTPUT_DIR, 'exp3_reconstruction_error.png')
     plt.savefig(fig4_path, dpi=300)
     plt.close()
