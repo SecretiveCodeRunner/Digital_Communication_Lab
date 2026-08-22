@@ -10,26 +10,6 @@ This directory contains the Python simulation, publication figures, Jupyter Note
 
 ---
 
-## 2. Directory Structure & Key Files
-
-```
-Experiment_04_Uniform_Quantization_and_PCM/
-├── experiment_04.py                      # Python simulation & validation script (generates all 4 figures)
-├── Experiment_04_Lab_Report.ipynb        # Academic Jupyter Notebook with code & theory
-├── VIDEO_PRESENTATION_SCRIPT.md          # Scene-by-scene presentation narration & viva Q&A
-├── Experiment_04_Presentation_Script.pdf # Compiled presentation script PDF
-├── Experiment_04_Presentation_Script.tex # LaTeX source for presentation script
-├── Digital_Comm_Exp4_Study_Guide.pdf     # 8-page comprehensive study guide PDF
-├── Digital_Comm_Exp4_Study_Guide.tex     # LaTeX source for study guide
-├── index.html                            # Interactive PCM Web Studio
-├── build_notebook.py                     # Jupyter notebook generator script
-├── plots/                                # Publication-quality 300 DPI figures
-│   ├── exp4_original_vs_quantized_waveforms.png
-│   ├── exp4_quantizer_staircase_characteristics.png
-│   ├── exp4_quantization_error_and_pdf.png
-│   └── exp4_sqnr_vs_bit_resolution.png
-└── README.md
-```
 
 ---
 
