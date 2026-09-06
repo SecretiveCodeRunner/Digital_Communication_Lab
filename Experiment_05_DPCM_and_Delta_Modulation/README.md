@@ -2,7 +2,7 @@
 
 **Department of Electronics and Communication Engineering**  
 **Cooch Behar Government Engineering College**  
-**Course:** Software-Based Digital Communication Laboratory (EC593 / EC592)  
+**Course:** Software-Based Digital Communication Laboratory (EC592)  
 **Student Name:** Apurba Maity | **Roll No.:** 34900324001 | **Semester:** 5th Sem ECE  
 
 ---
