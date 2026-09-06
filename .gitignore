@@ -5,6 +5,10 @@
 build_presentation_script_pdf.py
 test.pdf
 
+# Compiled PDF outputs (generated artifacts — not tracked)
+*.pdf
+
+
 # TeX & Build Artifacts
 *.aux
 *.log

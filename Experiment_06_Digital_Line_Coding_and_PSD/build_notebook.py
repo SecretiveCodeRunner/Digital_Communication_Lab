@@ -1,0 +1,284 @@
+import json
+import os
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+notebook_path = os.path.join(BASE_DIR, "Experiment_06_Lab_Report.ipynb")
+
+notebook = {
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# EXPERIMENT 6: DIGITAL LINE CODING SCHEMES & POWER SPECTRAL DENSITY (PSD) ANALYSIS\n",
+    "### Software-Based Digital Communication Laboratory (EC593 / EC592)\n",
+    "**Institution:** Cooch Behar Government Engineering College, Department of Electronics & Communication Engineering  \n",
+    "**Presenter / Student Name:** Apurba Maity | **University Roll No.:** 34900324001 | **Semester:** 5th Sem ECE  \n",
+    "\n",
+    "---\n",
+    "\n",
+    "## 1. Laboratory Objectives\n",
+    "1. **Time-Domain Baseband Encoders:** Construct waveform generators from first principles in Python (NumPy) for 7 fundamental baseband line codes:\n",
+    "   - Unipolar NRZ (NRZ-L) and Unipolar RZ\n",
+    "   - Polar NRZ (NRZ-L) and Polar RZ\n",
+    "   - Bipolar Alternate Mark Inversion (AMI)\n",
+    "   - Split-Phase / Manchester (IEEE 802.3 10BASE-T standard)\n",
+    "   - Differential Manchester\n",
+    "2. **Wiener-Khinchin Power Spectral Density (PSD) Derivations:** Derive and analyze closed-form spectral formulas for cyclostationary random pulse trains, isolating continuous spectra $S_c(f)$ from discrete delta lines $S_d(f)$.\n",
+    "3. **Monte Carlo Numerical Spectral Validation:** Execute Welch periodogram FFT spectral estimation over $N = 65,536$ bits, confirming exact mathematical convergence against theoretical sinc$^2$ envelopes.\n",
+    "4. **Channel AC-Coupling & Baseline Wandering Analysis:** Simulate transformer isolation and capacitive repeaters ($RC$ high-pass channel), evaluating severe DC baseline droop on Unipolar NRZ versus perfect zero-droop DC balance on Bipolar AMI and Manchester.\n",
+    "5. **Bit Timing Clock Recovery Circuit:** Implement a non-linear squaring module and high-$Q$ bandpass filter ($f_0 = R_b$) to extract synchronous symbol timing from baseband streams.\n",
+    "6. **Eye Diagram Diagnostic Synthesis:** Measure noise margins ($d_{\\min}$), zero-crossing jitter tolerance, and Inter-Symbol Interference (ISI) across line codes under additive Gaussian channel noise.\n",
+    "\n",
+    "---"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## 2. Mathematical Formulations & Power Spectral Density Derivations\n",
+    "\n",
+    "### 2.1 The Generalized Baseband Pulse Train Model\n",
+    "A continuous-time baseband digital line code is modeled as an infinite random pulse train:\n",
+    "$$s(t) = \\sum_{n=-\\infty}^{\\infty} a_n g(t - n T_b)$$\n",
+    "where $\\{a_n\\}$ is the random symbol sequence with autocorrelation $R(k) = E[a_n a_{n-k}]$, $g(t)$ is the basic pulse shape with Fourier transform $G(f)$, and $T_b = 1 / R_b$ is the bit period.\n",
+    "\n",
+    "### 2.2 The Wiener-Khinchin Theorem for Cyclostationary Pulse Trains\n",
+    "Time-averaging the cyclostationary autocorrelation over bit period $T_b$ gives the continuous Power Spectral Density:\n",
+    "$$S(f) = \\frac{1}{T_b} |G(f)|^2 \\sum_{k=-\\infty}^{\\infty} R(k) e^{-j 2\\pi k f T_b}$$\n",
+    "\n",
+    "Separating into continuous covariance $C(k) = R(k) - \\mu_a^2$ and discrete mean $\\mu_a = E[a_n]$:\n",
+    "$$S(f) = \\underbrace{\\frac{1}{T_b} |G(f)|^2 \\sum_{k=-\\infty}^{\\infty} C(k) e^{-j 2\\pi k f T_b}}_{S_c(f) \\text{ (Continuous Spectrum)}} + \\underbrace{\\frac{\\mu_a^2}{T_b^2} \\sum_{m=-\\infty}^{\\infty} |G(m/T_b)|^2 \\delta\\left(f - \\frac{m}{T_b}\\right)}_{S_d(f) \\text{ (Discrete Spectral Lines)}}$$\n",
+    "\n",
+    "### 2.3 Closed-Form Formulas for the Core Line Codes\n",
+    "\n",
+    "1. **Polar NRZ:** Symbols $a_n \\in \\{+V, -V\\}$, $\\mu_a = 0$, $R(0) = V^2$, $R(k)=0$ for $k \\ne 0$.\n",
+    "   $$S_{\\mathrm{Polar\\,NRZ}}(f) = V^2 T_b \\,\\mathrm{sinc}^2(f T_b)$$\n",
+    "   *Properties:* Broad mainlobe, first null at $f = R_b$, zero DC content for equiprobable bits.\n",
+    "\n",
+    "2. **Unipolar NRZ:** Symbols $a_n \\in \\{V, 0\\}$, $\\mu_a = V/2$, $R(0) = V^2/2$, $R(k) = V^2/4$.\n",
+    "   $$S_{\\mathrm{Unipolar\\,NRZ}}(f) = \\frac{V^2 T_b}{4} \\,\\mathrm{sinc}^2(f T_b) + \\mathbf{\\frac{V^2}{4} \\delta(f)}$$\n",
+    "   *Properties:* Contains a massive discrete DC delta impulse $\\frac{V^2}{4} \\delta(0)$ wasting $50\\%$ of transmitter power.\n",
+    "\n",
+    "3. **Unipolar RZ:** Pulse width $T_b / 2$.\n",
+    "   $$S_{\\mathrm{Unipolar\\,RZ}}(f) = \\frac{V^2 T_b}{16} \\,\\mathrm{sinc}^2\\left(\\frac{f T_b}{2}\\right) \\left[ 1 + \\frac{1}{T_b} \\sum_{k=-\\infty}^{\\infty} \\delta\\left(f - \\frac{k}{T_b}\\right) \\right]$$\n",
+    "   *Properties:* Discrete spectral lines at odd harmonics allow direct clock extraction at $f = R_b$, but requires double bandwidth.\n",
+    "\n",
+    "4. **Bipolar AMI:** Symbols alternate $+V, -V$ for bit 1, and $0\\text{ V}$ for bit 0.\n",
+    "   $$S_{\\mathrm{AMI}}(f) = V^2 T_b \\,\\mathrm{sinc}^2(f T_b) \\sin^2(\\pi f T_b)$$\n",
+    "   *Properties:* Strictly zero at DC ($S(0) = 0$). First nulls at $f = 0$ and $f = R_b$, concentrating energy into a compact lobe centered at $R_b/2$.\n",
+    "\n",
+    "5. **Split-Phase / Manchester (IEEE 802.3):** Doublet pulse shape with mid-bit transition.\n",
+    "   $$S_{\\mathrm{Manchester}}(f) = V^2 T_b \\,\\mathrm{sinc}^2\\left(\\frac{f T_b}{2}\\right) \\sin^2\\left(\\frac{\\pi f T_b}{2}\\right)$$\n",
+    "   *Properties:* Strictly zero DC power ($S(0) = 0$), peak energy near $0.74 R_b$, guaranteed mid-bit transition for robust clock extraction. First null at $2 R_b$ ($2\\times$ bandwidth)."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Import core scientific libraries and configure presentation display formatting\n",
+    "import os\n",
+    "import numpy as np\n",
+    "import matplotlib.pyplot as plt\n",
+    "from scipy import signal\n",
+    "from IPython.display import Image, display\n",
+    "\n",
+    "plt.rcParams['font.family'] = 'DejaVu Sans'\n",
+    "plt.rcParams['mathtext.fontset'] = 'cm'\n",
+    "plt.rcParams['figure.dpi'] = 150\n",
+    "\n",
+    "PLOTS_DIR = os.path.join(os.getcwd(), 'plots')\n",
+    "print(\"Interactive Presentation Environment Ready. Directory:\", PLOTS_DIR)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## 3. First-Principles Python Architecture: Core Function Walkthrough\n",
+    "In the cell below, we run our standalone simulation script `experiment_06.py` to synthesize all 7 baseband formats, calculate analytical and numerical PSDs, model AC coupling transients, and generate eye diagrams."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "import experiment_06\n",
+    "\n",
+    "# Execute the simulation pipeline to run all models and render 300 DPI figures\n",
+    "experiment_06.run_simulation_and_generate_plots()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## 4. Empirical Waveform Analysis & Generated Visualizations\n",
+    "\n",
+    "### 4.1 Figure 1: Synchronized Time-Domain Waveforms\n",
+    "Synchronized multi-panel plot comparing 6 line codes over the standardized 16-bit pseudo-random test sequence `[1, 0, 1, 1, 0, 0, 1, 0, 1, 1, 1, 0, 0, 1, 0, 1]`. Notice the alternating polarity of 1s in Bipolar AMI and the guaranteed mid-bit transitions in Manchester."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "display(Image(filename=os.path.join(PLOTS_DIR, 'fig1_line_coding_time_domain_waveforms.png')))"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### 4.2 Figure 2: Master Theoretical Power Spectral Density Comparison\n",
+    "Master comparison of closed-form analytical PSD curves on both linear and semi-logarithmic scales. Notice the discrete DC impulse on Unipolar NRZ, the zero-DC null on Bipolar AMI and Manchester, and the wider bandwidth of Manchester."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "display(Image(filename=os.path.join(PLOTS_DIR, 'fig2_theoretical_psd_master_comparison.png')))"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### 4.3 Figure 3: Monte Carlo Numerical vs. Analytical PSD Validation\n",
+    "Overlay of numerical Welch periodogram estimations ($N = 65,536$ random bits) onto analytical Wiener-Khinchin formulas, proving exact mathematical convergence."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 5,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "display(Image(filename=os.path.join(PLOTS_DIR, 'fig3_empirical_vs_theoretical_psd_validation.png')))"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### 4.4 Figure 4: AC-Coupling & Baseline Wandering Transient Analysis\n",
+    "Transient response of line codes passing through an AC-coupled link ($RC$ high-pass filter). Long runs of 1s cause catastrophic exponential baseline droop on Unipolar NRZ, while Bipolar AMI and Manchester remain perfectly centered."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 6,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "display(Image(filename=os.path.join(PLOTS_DIR, 'fig4_baseline_wander_ac_coupling_transient.png')))"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### 4.5 Figure 5: Bit Timing Clock Extraction Pipeline\n",
+    "Simulated clock recovery pipeline: received Unipolar RZ baseband data is processed by a non-linear squaring circuit followed by a high-$Q$ bandpass filter ($f_0 = R_b$), recovering a pure sinusoidal clock and regenerated mid-bit decision strobes."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 7,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "display(Image(filename=os.path.join(PLOTS_DIR, 'fig5_clock_recovery_spectral_line_extraction.png')))"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### 4.6 Figure 6: Eye Diagram & Noise Margin Analysis\n",
+    "Eye diagrams for Polar NRZ vs. Manchester under additive channel noise and timing jitter, illustrating maximum vertical eye opening (noise margin) and horizontal transition width."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 8,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "display(Image(filename=os.path.join(PLOTS_DIR, 'fig6_eye_diagram_and_noise_margin_analysis.png')))"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## 5. Theory vs. Practicality & Hardware Realities (The Presentation Core)\n",
+    "\n",
+    "### 5.1 Where Textbook Theory Meets Hardware Reality\n",
+    "When explaining this experiment in an engineering video presentation, three physical hardware constraints must be highlighted:\n",
+    "\n",
+    "1. **The Curse of DC Baseline Wander:**\n",
+    "   - *Theory:* Unipolar NRZ looks simplest to generate from microcontroller GPIO pins (0V to 3.3V).\n",
+    "   - *Hardware Reality:* The moment this signal enters an Ethernet transformer or telephone repeater, the series capacitor blocks DC. During a run of consecutive 1s, the voltage decays exponentially ($v(t) = V e^{-t/RC}$). When a 0 arrives, the voltage plunges below ground, crossing the receiver threshold and causing massive burst errors. This is why commercial Ethernet mandates **Manchester or 4B/5B**.\n",
+    "\n",
+    "2. **Clock Starvation on Long Strings of Zeros:**\n",
+    "   - *Theory:* Bipolar AMI achieves zero DC content within a compact bandwidth ($B_{\\min} = R_b/2$).\n",
+    "   - *Hardware Reality:* If the data contains 100 consecutive 0s, Bipolar AMI outputs flat zero volts for 100 bit intervals. The receiver clock recovery circuit starves and loses phase lock. Telecommunications networks solved this by introducing **scramblers (HDB3 in Europe/India, B8ZS in North America)** that substitute illegal bipolar violations to force transitions.\n",
+    "\n",
+    "3. **Why Ethernet Pays the 2x Bandwidth Penalty for Manchester:**\n",
+    "   - *Theory:* Manchester requires double the transmission bandwidth of Polar NRZ.\n",
+    "   - *Hardware Reality:* IEEE 802.3 10BASE-T gladly accepts this $2\\times$ bandwidth cost because Manchester guarantees a transition at the center of every single bit, making clock recovery trivial, and provides zero DC, allowing cheap isolation transformers on unshielded twisted pair cables.\n",
+    "\n",
+    "### 5.2 Summary Engineering Trade-Off Matrix\n",
+    "\n",
+    "| Line Code | DC Component | Clock Recovery | Bandwidth ($B_{\\min}$) | Noise Margin ($d_{\\min}$) | Built-in Error Detection | Primary Application |\n",
+    "| :--- | :---: | :---: | :---: | :---: | :---: | :--- |\n",
+    "| **Unipolar NRZ** | Very High ($\\frac{V^2}{4}\\delta(0)$) | Poor (fails on 0s) | $R_b / 2$ | $V$ | None | Short-range internal IC bus, UART |\n",
+    "| **Unipolar RZ** | High | Excellent (line at $R_b$) | $R_b$ | $V$ | None | Optical fiber on-off keying |\n",
+    "| **Polar NRZ** | Zero (if $p=0.5$) | Poor on runs of 1s/0s | $R_b / 2$ | **$2V$ (Best)** | None | RS-232 serial telemetry |\n",
+    "| **Bipolar AMI** | **Strictly Zero** | Moderate (fails on 0s) | **$R_b / 2$** | $V$ | Built-in (AMI violation) | T1/E1 telecommunications trunks |\n",
+    "| **Manchester** | **Strictly Zero** | **Guaranteed** (mid-bit) | $R_b$ ($2\\times$) | **$2V$** | Built-in (illegal transitions) | IEEE 802.3 10BASE-T Ethernet, RFID |\n",
+    "\n",
+    "---"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## 6. Video Presentation Conclusion & Summary\n",
+    "In this experiment, we:\n",
+    "- Synthesized and evaluated 7 fundamental baseband line codes in time and frequency domains from first principles in Python.\n",
+    "- Rigorously derived their closed-form Power Spectral Density formulas via the Wiener-Khinchin theorem and validated convergence via Monte Carlo Welch FFT ($65,536$ bits).\n",
+    "- Simulated transient AC-coupling to demonstrate the physical mechanism of baseline wandering and why zero-DC codes (AMI, Manchester) are indispensable for transformer-isolated channels.\n",
+    "- Constructed a simulated non-linear squaring and high-$Q$ bandpass filter clock recovery circuit.\n",
+    "- Evaluated noise margins and timing jitter sensitivity using Eye Diagrams.\n",
+    "\n",
+    "**Source Code & Artifacts:** Open source on GitHub (`SecretiveCodeRunner/Digital_Communication_Lab`)."
+   ]
+  }
+ ],
+ "metadata": {
+  "language_info": {
+   "name": "python"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 2
+}
+
+with open(notebook_path, "w", encoding="utf-8") as f:
+    json.dump(notebook, f, indent=1)
+
+print(f"Master Notebook successfully built at: {notebook_path}")
