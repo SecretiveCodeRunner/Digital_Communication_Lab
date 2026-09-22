@@ -8,6 +8,11 @@ test.pdf
 # Compiled PDF outputs (generated artifacts — not tracked)
 *.pdf
 
+# Build & generator helper scripts
+build_notebook.py
+build_*_study_guide.py
+*Study_Guide.tex
+
 
 # TeX & Build Artifacts
 *.aux
