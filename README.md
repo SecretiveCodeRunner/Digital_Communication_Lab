@@ -19,8 +19,8 @@
 | **06** | **Digital Line Coding Schemes & PSD Analysis** | ✅ **COMPLETED** | [experiment_06.py](Experiment_06_Digital_Line_Coding_and_PSD/experiment_06.py), [Jupyter Notebook](Experiment_06_Digital_Line_Coding_and_PSD/Experiment_06_Lab_Report.ipynb), [Study Guide (PDF)](Experiment_06_Digital_Line_Coding_and_PSD/Digital_Comm_Exp6_Study_Guide.pdf) |
 | **07** | **Pulse Shaping & Nyquist Criterion for Zero ISI** | ✅ **COMPLETED** | [experiment_07.py](Experiment_07_Pulse_Shaping_and_Nyquist_Criterion/experiment_07.py), [Jupyter Notebook](Experiment_07_Pulse_Shaping_and_Nyquist_Criterion/Experiment_07_Lab_Report.ipynb) |
 | **08** | **Matched Filtering, ISI & Eye Diagrams** | ✅ **COMPLETED** | [experiment_08.py](Experiment_08_Matched_Filtering_ISI_and_Eye_Diagrams/experiment_08.py), [Jupyter Notebook](Experiment_08_Matched_Filtering_ISI_and_Eye_Diagrams/Experiment_08_Lab_Report.ipynb) |
-| **09** | Binary ASK & BFSK Modulation | ⏳ Scheduled (Exp 9) | Coherent vs non-coherent detection |
-| **10** | BPSK, Gray QPSK & DPSK | ⏳ Scheduled (Exp 10) | Phase constellation rotation |
+| **09** | **Binary ASK & BFSK Modulation** | ✅ **COMPLETED** | [experiment_09.py](Experiment_09_Binary_ASK_and_BFSK_Modulation/experiment_09.py), [Jupyter Notebook](Experiment_09_Binary_ASK_and_BFSK_Modulation/Experiment_09_Lab_Report.ipynb), [Study Guide (PDF)](Experiment_09_Binary_ASK_and_BFSK_Modulation/Digital_Comm_Exp9_Study_Guide.pdf), [Presentation Script (PDF)](Experiment_09_Binary_ASK_and_BFSK_Modulation/Experiment_09_Presentation_Script.pdf) |
+| **10** | **BPSK, Gray QPSK & DPSK Modulation** | ✅ **COMPLETED** | [experiment_10.py](Experiment_10_BPSK_QPSK_and_DPSK_Modulation/experiment_10.py), [Jupyter Notebook](Experiment_10_BPSK_QPSK_and_DPSK_Modulation/Experiment_10_Lab_Report.ipynb), [Study Guide (PDF)](Experiment_10_BPSK_QPSK_and_DPSK_Modulation/Digital_Comm_Exp10_Study_Guide.pdf), [Presentation Script (PDF)](Experiment_10_BPSK_QPSK_and_DPSK_Modulation/Experiment_10_Presentation_Script.pdf) |
 | **11** | M-PSK & M-QAM Higher-Order Modulation | ⏳ Scheduled (Exp 11) | Spectral efficiency & energy norm |
 | **12** | Monte Carlo BER Performance over AWGN | ⏳ Scheduled (Exp 12) | Theory vs simulated semilog curves |
 
@@ -28,36 +28,36 @@
 
 ## Experiment 4 Summary: Uniform Quantization and PCM
 
-- **Python Simulation:** [experiment_04.py](file:///home/apurba/Projects/Digital_Communication_Lab/Experiment_04_Uniform_Quantization_and_PCM/experiment_04.py)
-- **Notebook Report:** [Experiment_04_Lab_Report.ipynb](file:///home/apurba/Projects/Digital_Communication_Lab/Experiment_04_Uniform_Quantization_and_PCM/Experiment_04_Lab_Report.ipynb)
-- **Academic Study Guide (PDF):** [Digital_Comm_Exp4_Study_Guide.pdf](file:///home/apurba/Projects/Digital_Communication_Lab/Experiment_04_Uniform_Quantization_and_PCM/Digital_Comm_Exp4_Study_Guide.pdf)
-- **Interactive Web Studio:** [index.html](file:///home/apurba/Projects/Digital_Communication_Lab/Experiment_04_Uniform_Quantization_and_PCM/index.html) (60 FPS visualizers, live audio synthesizer bit-crusher)
+- **Python Simulation:** [experiment_04.py](Experiment_04_Uniform_Quantization_and_PCM/experiment_04.py)
+- **Notebook Report:** [Experiment_04_Lab_Report.ipynb](Experiment_04_Uniform_Quantization_and_PCM/Experiment_04_Lab_Report.ipynb)
+- **Academic Study Guide (PDF):** [Digital_Comm_Exp4_Study_Guide.pdf](Experiment_04_Uniform_Quantization_and_PCM/Digital_Comm_Exp4_Study_Guide.pdf)
+- **Interactive Web Studio:** [index.html](Experiment_04_Uniform_Quantization_and_PCM/index.html) (60 FPS visualizers, live audio synthesizer bit-crusher)
 
 ---
 
 ## Experiment 3 Summary: Sampling, Aliasing and Sinc Reconstruction
 
-- **Script:** [experiment_03.py](file:///home/apurba/Projects/Digital_Communication_Lab/Experiment_03_Sampling_Aliasing_and_Reconstruction/experiment_03.py)
-- **Notebook Report:** [Experiment_03_Lab_Report.ipynb](file:///home/apurba/Projects/Digital_Communication_Lab/Experiment_03_Sampling_Aliasing_and_Reconstruction/Experiment_03_Lab_Report.ipynb)
-- **Study & Viva Guide (PDF):** [Digital_Comm_Exp3_Study_Guide.pdf](file:///home/apurba/Projects/Digital_Communication_Lab/Experiment_03_Sampling_Aliasing_and_Reconstruction/Digital_Comm_Exp3_Study_Guide.pdf)
-- **Mobile HTML Guide:** [Python_and_DSP_Study_Guide_Exp3.html](file:///home/apurba/Projects/Digital_Communication_Lab/Experiment_03_Sampling_Aliasing_and_Reconstruction/Python_and_DSP_Study_Guide_Exp3.html)
+- **Script:** [experiment_03.py](Experiment_03_Sampling_Aliasing_and_Reconstruction/experiment_03.py)
+- **Notebook Report:** [Experiment_03_Lab_Report.ipynb](Experiment_03_Sampling_Aliasing_and_Reconstruction/Experiment_03_Lab_Report.ipynb)
+- **Study & Viva Guide (PDF):** [Digital_Comm_Exp3_Study_Guide.pdf](Experiment_03_Sampling_Aliasing_and_Reconstruction/Digital_Comm_Exp3_Study_Guide.pdf)
+- **Mobile HTML Guide:** [Python_and_DSP_Study_Guide_Exp3.html](Experiment_03_Sampling_Aliasing_and_Reconstruction/Python_and_DSP_Study_Guide_Exp3.html)
 
 ---
 
 ## Experiment 5 Summary: DPCM, Delta Modulation & Adaptive DM (ADM)
 
-- **Python Simulation:** [experiment_05.py](file:///home/apurba/Projects/Digital_Communication_Lab/Experiment_05_DPCM_and_Delta_Modulation/experiment_05.py)
-- **Notebook Report:** [Experiment_05_Lab_Report.ipynb](file:///home/apurba/Projects/Digital_Communication_Lab/Experiment_05_DPCM_and_Delta_Modulation/Experiment_05_Lab_Report.ipynb)
-- **Academic Study Guide (PDF):** [Digital_Comm_Exp5_Study_Guide.pdf](file:///home/apurba/Projects/Digital_Communication_Lab/Experiment_05_DPCM_and_Delta_Modulation/Digital_Comm_Exp5_Study_Guide.pdf)
+- **Python Simulation:** [experiment_05.py](Experiment_05_DPCM_and_Delta_Modulation/experiment_05.py)
+- **Notebook Report:** [Experiment_05_Lab_Report.ipynb](Experiment_05_DPCM_and_Delta_Modulation/Experiment_05_Lab_Report.ipynb)
+- **Academic Study Guide (PDF):** [Digital_Comm_Exp5_Study_Guide.pdf](Experiment_05_DPCM_and_Delta_Modulation/Digital_Comm_Exp5_Study_Guide.pdf)
 - **Key Modules:** 1st & 2nd order linear predictors ($G_p \approx 7.2\,\mathrm{dB}$), slope overload vs. granular noise, Jayant/Song ADM step adaptation ($K_e = 1.5, K_c = 0.66$), Butterworth LPF reconstruction with $+9\,\mathrm{dB/octave}$ SNR scaling.
 
 ---
 
 ## Experiment 6 Summary: Digital Line Coding & Power Spectral Density (PSD)
 
-- **Python Simulation:** [experiment_06.py](file:///home/apurba/Projects/Digital_Communication_Lab/Experiment_06_Digital_Line_Coding_and_PSD/experiment_06.py)
-- **Notebook Report:** [Experiment_06_Lab_Report.ipynb](file:///home/apurba/Projects/Digital_Communication_Lab/Experiment_06_Digital_Line_Coding_and_PSD/Experiment_06_Lab_Report.ipynb)
-- **Academic Study Guide (PDF):** [Digital_Comm_Exp6_Study_Guide.pdf](file:///home/apurba/Projects/Digital_Communication_Lab/Experiment_06_Digital_Line_Coding_and_PSD/Digital_Comm_Exp6_Study_Guide.pdf)
+- **Python Simulation:** [experiment_06.py](Experiment_06_Digital_Line_Coding_and_PSD/experiment_06.py)
+- **Notebook Report:** [Experiment_06_Lab_Report.ipynb](Experiment_06_Digital_Line_Coding_and_PSD/Experiment_06_Lab_Report.ipynb)
+- **Academic Study Guide (PDF):** [Digital_Comm_Exp6_Study_Guide.pdf](Experiment_06_Digital_Line_Coding_and_PSD/Digital_Comm_Exp6_Study_Guide.pdf)
 - **Key Modules:** 7 baseband line encoders (Unipolar/Polar NRZ/RZ, AMI, Manchester, Diff Manchester), closed-form Wiener-Khinchin PSD derivations, Monte Carlo Welch FFT ($65,536$ bits), AC-coupling baseline wander analysis, clock recovery circuit, and eye diagrams.
 
 ---
@@ -75,6 +75,27 @@
 - **Python Simulation:** [experiment_08.py](Experiment_08_Matched_Filtering_ISI_and_Eye_Diagrams/experiment_08.py)
 - **Notebook Report:** [Experiment_08_Lab_Report.ipynb](Experiment_08_Matched_Filtering_ISI_and_Eye_Diagrams/Experiment_08_Lab_Report.ipynb)
 - **Key Modules:** Matched filter derivation via Cauchy-Schwarz inequality ($h_{\mathrm{opt}}(t) = k s(T - t)$), Energy Invariance Theorem ($\mathrm{SNR}_{\max} = \frac{2E}{N_0}$ waveshape independence across Rectangular, Half-Sine, Triangular, and Raised-Cosine), dynamic equivalence with active correlator receiver ($\int_0^T r(t)s(t)dt \equiv [r*h](T)$), sampling clock phase sensitivity and second-derivative curvature ($R_{ss}''(\tau)$), Butterworth channel dispersion and Nyquist peak distortion ($D_{\mathrm{ISI}}$), 4-panel high-density eye diagrams (extracting Noise Margin and Jitter Margin), and comprehensive Monte Carlo BER simulation ($200,000$ bits) validating $Q\left(\sqrt{2 E_b / N_0}\right)$ with $1.2\,\mathrm{dB}$ RC sub-optimal filter penalty and $1.7\,\mathrm{dB}$ jitter loss.
+
+---
+
+## Experiment 9 Summary: Binary ASK & BFSK Modulation and Demodulation
+
+- **Python Simulation:** [experiment_09.py](Experiment_09_Binary_ASK_and_BFSK_Modulation/experiment_09.py)
+- **Notebook Report:** [Experiment_09_Lab_Report.ipynb](Experiment_09_Binary_ASK_and_BFSK_Modulation/Experiment_09_Lab_Report.ipynb)
+- **Academic Study Guide (PDF):** [Digital_Comm_Exp9_Study_Guide.pdf](Experiment_09_Binary_ASK_and_BFSK_Modulation/Digital_Comm_Exp9_Study_Guide.pdf)
+- **Video Presentation Script (PDF):** [Experiment_09_Presentation_Script.pdf](Experiment_09_Binary_ASK_and_BFSK_Modulation/Experiment_09_Presentation_Script.pdf)
+- **Key Modules:** 1D BASK ($N=1$, $\gamma = \sqrt{E_b/2}$) vs. 2D orthogonal BFSK ($N=2$, $d = \sqrt{2 E_b}$), mathematical proof of BFSK orthogonality ($\Delta f = R_b/2$ coherent MSK vs. $\Delta f = R_b$ non-coherent Sunde's FSK), synchronous correlator detection, non-coherent envelope detection with Rayleigh and Rician distribution mechanics, continuous-phase CPFSK Carson bandwidth, and large-scale Monte Carlo simulation ($200,000$ bits) verifying $3\,\mathrm{dB}$ BFSK and $6\,\mathrm{dB}$ BASK power penalties relative to BPSK.
+
+---
+
+## Experiment 10 Summary: BPSK, Gray QPSK & Differential PSK (DPSK)
+
+- **Python Simulation:** [experiment_10.py](Experiment_10_BPSK_QPSK_and_DPSK_Modulation/experiment_10.py)
+- **Notebook Report:** [Experiment_10_Lab_Report.ipynb](Experiment_10_BPSK_QPSK_and_DPSK_Modulation/Experiment_10_Lab_Report.ipynb)
+- **Academic Study Guide (PDF):** [Digital_Comm_Exp10_Study_Guide.pdf](Experiment_10_BPSK_QPSK_and_DPSK_Modulation/Digital_Comm_Exp10_Study_Guide.pdf)
+- **Video Presentation Script (PDF):** [Experiment_10_Presentation_Script.pdf](Experiment_10_BPSK_QPSK_and_DPSK_Modulation/Experiment_10_Presentation_Script.pdf)
+- **Key Modules:** BPSK antipodal optimization ($d = 2\sqrt{E_b}$, $P_b = Q(\sqrt{2 E_b/N_0})$), QPSK 4-phase constellation with Gray coding ($d_{\min} = 2\sqrt{E_b}$), mathematical proof of identical BER between Gray QPSK and BPSK alongside $50\%$ bandwidth compression ($\eta = 2.0\,\mathrm{b/s/Hz}$), Non-Gray $1.5\times$ bit error penalty, synchronous I/Q orthogonal multiplier-integrator demodulator, 2D Gaussian constellation scatter clustering, and DPSK differential encoding ($d_k = b_k \oplus d_{k-1}$) resolving Costas loop $180^\circ$ phase ambiguity with only $0.8\,\mathrm{dB}$ SNR penalty ($P_b = \frac{1}{2} e^{-E_b/N_0}$).
+
 
 
 
